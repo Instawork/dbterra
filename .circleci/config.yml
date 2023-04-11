@@ -28,12 +28,13 @@ jobs:
           key: v1-cargo-cross
           paths: 
             - /home/circleci/.cargo/bin/cross
+            - /home/circleci/.cargo/bin/cross-util
       - run:
           name: Compile for Linux ARM64
-          command: CROSS_DOCKER_IN_DOCKER=true cross build --target aarch64-unknown-linux-gnu --release
+          command: CROSS_CONTAINER_IN_CONTAINER=true cross build --target aarch64-unknown-linux-gnu --release
       - run:
           name: Compile for Linux x86_64
-          command: CROSS_DOCKER_IN_DOCKER=true cross build --target x86_64-unknown-linux-gnu --release
+          command: CROSS_CONTAINER_IN_CONTAINER=true cross build --target x86_64-unknown-linux-gnu --release
 
 workflows:
   release:
