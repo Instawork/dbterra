@@ -7,6 +7,8 @@ jobs:
     resource_class: small
     docker:
       - image: cimg/rust:1.68.2
+    environment:
+      CROSS_CONTAINER_IN_CONTAINER: "true"
     steps:
       - setup_remote_docker:
           version: 20.10.14
@@ -30,11 +32,11 @@ jobs:
             - /home/circleci/.cargo/bin/cross
             - /home/circleci/.cargo/bin/cross-util
       - run:
-          name: Compile for Linux ARM64
-          command: CROSS_CONTAINER_IN_CONTAINER=true cross build --target aarch64-unknown-linux-gnu --release
-      - run:
           name: Compile for Linux x86_64
-          command: CROSS_CONTAINER_IN_CONTAINER=true cross build --target x86_64-unknown-linux-gnu --release
+          command: cross build --target x86_64-unknown-linux-gnu --release
+      - run:
+          name: Compile for Linux ARM64
+          command: cross build --target aarch64-unknown-linux-gnu --release
 
 workflows:
   release:
