@@ -12,9 +12,22 @@ jobs:
           version: 20.10.14
           docker_layer_caching: true
       - checkout
+      - restore_cache:
+          key: v1-cargo-cross
       - run:
           name: Install Cross for Compilation
-          command: cargo install cross --git https://github.com/cross-rs/cross
+          command: |
+            set -x
+            CROSS=/home/circleci/.cargo/bin/cross
+            if [ -f "$CROSS" ]; then
+              echo "cargo cross already installed"
+            else
+              cargo install cross --git https://github.com/cross-rs/cross
+            fi
+      - save_cache:
+          key: v1-cargo-cross
+          paths: 
+            - /home/circleci/.cargo/bin/cross
       - run:
           name: Compile for Linux ARM64
           command: CROSS_DOCKER_IN_DOCKER=true cross build --target aarch64-unknown-linux-gnu --release
