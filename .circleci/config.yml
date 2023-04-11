@@ -1,0 +1,33 @@
+version: 2.1
+orbs:
+  aws-ecr: circleci/aws-ecr@8.2.1
+
+jobs:
+  release:
+    resource_class: small
+    docker:
+      - image: cimg/rust:1.68.2
+    steps:
+      - setup_remote_docker:
+          version: 20.10.14
+      - checkout
+      - run:
+          name: Install Cross for Compilation
+          command: cargo install cross --git https://github.com/cross-rs/cross
+      - run:
+          name: Compile for Linux ARM64
+          command: cross build --target aarch64-unknown-linux-gnu --release
+      - run:
+          name: Compile for Linux x86_64
+          command: cross build --target x86_64-unknown-linux-gnu --release
+
+workflows:
+  release:
+    jobs:
+      - release:
+          filters: 
+              tags:
+                only: 
+                  - /^v.*/
+              branches:
+                ignore: /.*/
