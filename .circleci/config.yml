@@ -15,7 +15,7 @@ jobs:
           version: 1.68.2
       - run:
           name: Install glibc
-          command: apt-get update && apt-get install --no-install-recommends -y glibc
+          command: sudo apt-get update && sudo apt-get install --no-install-recommends -y glibc
       - restore_cache:
           key: v2-cargo-cross
       - run:
