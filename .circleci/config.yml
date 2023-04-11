@@ -7,15 +7,12 @@ jobs:
   release:
     resource_class: small
     machine:
-      image: ubuntu-2004:202104-01
+      image: ubuntu-2204:2023.02.1
       docker_layer_caching: true
     steps:
       - checkout
       - rust/install:
           version: 1.68.2
-      - run:
-          name: Install glibc
-          command: sudo apt-get update && sudo apt-get install --no-install-recommends -y glibc
       - restore_cache:
           key: v2-cargo-cross
       - run:
