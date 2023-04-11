@@ -11,11 +11,11 @@ jobs:
       CROSS_CONTAINER_IN_CONTAINER: "true"
     steps:
       - setup_remote_docker:
-          version: 20.10.14
+          version: 20.10.18
           docker_layer_caching: true
       - checkout
       - restore_cache:
-          key: v1-cargo-cross
+          key: v2-cargo-cross
       - run:
           name: Install Cross for Compilation
           command: |
@@ -27,7 +27,7 @@ jobs:
               cargo install cross --git https://github.com/cross-rs/cross
             fi
       - save_cache:
-          key: v1-cargo-cross
+          key: v2-cargo-cross
           paths: 
             - /home/circleci/.cargo/bin/cross
             - /home/circleci/.cargo/bin/cross-util
