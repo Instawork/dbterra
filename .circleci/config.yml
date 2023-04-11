@@ -1,19 +1,18 @@
 version: 2.1
+
 orbs:
-  aws-ecr: circleci/aws-ecr@8.2.1
+  rust: circleci/rust@1.6.0
 
 jobs:
   release:
     resource_class: small
-    docker:
-      - image: cimg/rust:1.68.2
-    environment:
-      CROSS_CONTAINER_IN_CONTAINER: "true"
+    machine:
+      image: ubuntu-2004:202104-01
+      docker_layer_caching: true
     steps:
-      - setup_remote_docker:
-          version: 20.10.18
-          docker_layer_caching: true
       - checkout
+      - rust/install:
+          version: 1.68.2
       - restore_cache:
           key: v2-cargo-cross
       - run:
