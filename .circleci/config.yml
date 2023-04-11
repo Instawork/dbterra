@@ -7,9 +7,12 @@ jobs:
     resource_class: small
     docker:
       - image: cimg/rust:1.68.2
+    environment:
+      CROSS_DOCKER_IN_DOCKER: "true"
     steps:
       - setup_remote_docker:
           version: 20.10.14
+          docker_layer_caching: true
       - checkout
       - run:
           name: Install Cross for Compilation
