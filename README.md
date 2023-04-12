@@ -68,7 +68,7 @@ The `name` key is optional and will default to the "Title Case" of the key of th
 
 ## Installation
 
-For convenience, we've built binaries for both `x86_64` and `aarch64` linux for both `musl` and `gnu` variants. If you want to install this on another system (such as Mac OS) and have `cargo` installed, you can use:
+For convenience, we've built binaries for both `x86_64` and `aarch64` linux for both `musl` and `gnu` variants under the [Releases](https://github.com/Instawork/dbt-cloud-sync/releases) section. If you want to install this on another system (such as Mac OS) and have `cargo` installed, you can use:
 
 ```bash
  cargo install dbt-cloud-sync --git https://github.com/Instawork/dbt-cloud-sync.git
@@ -87,5 +87,3 @@ To run the full test suite, use:
 ```bash
 cargo test --all
 ```
-
-from the repository root.
