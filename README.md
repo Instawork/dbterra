@@ -74,6 +74,12 @@ For convenience, we've built binaries for both `x86_64` and `aarch64` linux for 
  cargo install dbt-cloud-sync --git https://github.com/Instawork/dbt-cloud-sync.git
  ```
 
+## What's missing?
+
+- [ ] Create/modify/delete environments (currently read-only)
+- [ ] Create/modify/delete projects (currently read-only)
+- [ ] Set `id` on an existing job instead of using `name` as unique identifier
+
 ## Contributing
 
 Please feel free to open a [PR](https://github.com/Instawork/dbt-cloud-sync/pulls)
