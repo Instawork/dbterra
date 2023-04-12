@@ -1,3 +1,4 @@
+use convert_case::{Case, Casing};
 use std::collections::HashMap;
 
 use crate::config::Config;
@@ -6,8 +7,24 @@ use crate::local::{Environment, Job, Schedule as LocalSchedule};
 use crate::remote::{Execution, Schedule, Settings, Triggers};
 use crate::RemoteJob;
 
+/// Used to handle cases like `ml_feautres -> ML Features`
+fn captialize_short_words(w: &str) -> String {
+    let words: Vec<_> = w
+        .split_ascii_whitespace()
+        .map(|word| {
+            if word.len() <= 2 {
+                word.to_ascii_uppercase()
+            } else {
+                word.to_string()
+            }
+        })
+        .collect();
+    words.join(" ")
+}
+
 impl RemoteJob {
     pub fn from_local_job(
+        key: &str,
         job: Job,
         config: &Config,
         environments: &HashMap<String, Environment>,
@@ -20,12 +37,15 @@ impl RemoteJob {
             cron: "0/10 * * * *".to_string(),
         });
         let ci = job.ci.unwrap_or_default();
+        let name = job
+            .name
+            .unwrap_or_else(|| captialize_short_words(&key.to_case(Case::Title)));
         RemoteJob {
             id: None,
             account_id: config.account_id,
             project_id: config.project_id.expect("missing project_id for local job"),
             environment_id: environment.id,
-            name: job.name,
+            name: name,
             dbt_version: None,
             triggers: Triggers {
                 github_webhook: ci.run_on_pr.unwrap_or_default(),

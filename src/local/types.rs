@@ -16,7 +16,7 @@ pub struct Project {
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
 pub struct Job {
-    pub name: String,
+    pub name: Option<String>,
     pub environment: String,
     pub target: String,
     pub timeout: Option<i64>,

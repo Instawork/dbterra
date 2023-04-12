@@ -13,3 +13,4 @@ serde_json = "1.0"
 treediff = { version = "4", features = ["with-serde-json"] }
 colored = "2"
 dialoguer = "0.10.3"
+convert_case = "0.6"

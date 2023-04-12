@@ -21,7 +21,7 @@ impl Plan {
         for (k, project) in yaml.projects.iter() {
             // Grab the local YAML jobs and the remote jobs for the project
             let local_config = config.with_project_id(project.id);
-            let local_jobs: Vec<&LocalJob> = project.jobs.values().collect();
+            let local_jobs: Vec<(&String, &LocalJob)> = project.jobs.iter().collect();
             let remote_jobs = client
                 .get_jobs_for_project(project.id)
                 .expect("failed to get remote jobs");
@@ -29,7 +29,9 @@ impl Plan {
             // Convert our local jobs to look like remote ones
             let converted_local_jobs: Vec<_> = local_jobs
                 .into_iter()
-                .map(|j| RemoteJob::from_local_job(j.clone(), &local_config, &yaml.environments))
+                .map(|(k, j)| {
+                    RemoteJob::from_local_job(k, j.clone(), &local_config, &yaml.environments)
+                })
                 .collect();
 
             // Figure out which are updates, creates, and deletes
