@@ -46,7 +46,6 @@ fn main() {
     }
 
     // TODO: Move into function and call from correct commands
-    let config = Config::build().expect("failed to build config");
     let parse_yaml = read_yaml_file("./dbt_cloud.yml");
     if parse_yaml.is_err() {
         println!("{}", "failed to read dbt_cloud.yml file:".red());
@@ -55,6 +54,7 @@ fn main() {
     }
 
     let yaml = parse_yaml.unwrap();
+    let config = Config::build(&yaml).expect("failed to build config");
     let client = DbtCloudClient::new(&config);
 
     match &cli.command {

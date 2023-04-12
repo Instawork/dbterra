@@ -18,6 +18,8 @@ DBT_CLOUD_TOKEN=abc123456xyz
 Your `DBT_CLOUD_ACCOUNT_ID` can be found by looking at the URL you use to access `dbt Cloud`:
 `https://cloud.getdbt.com/deploy/<account_id>/projects/<project_id>/jobs`
 
+*You may also declare this via `account` in your `dbt_cloud.yml` file.*
+
 Your `DBT_CLOUD_TOKEN` can be found at the bottom of your [profile page](https://cloud.getdbt.com/settings/profile)
 
 ### dbt_cloud.yml
@@ -25,6 +27,10 @@ Your `DBT_CLOUD_TOKEN` can be found at the bottom of your [profile page](https:/
 The basic setup required that the `dbt_cloud.yml` file  is present. `dbt-cloud-sync` looks for this file in the root folder of the current working directory. A sample file below demonstrates what this might look like:
 
 ```yml
+# optionally allowed or can be set via DBT_CLOUD_ACCOUNT_ID 
+# account:
+#  id: 123
+
 projects:
   example_project:
     # project_id in dbt cloud https://cloud.getdbt.com/deploy/<account_id>/projects/<project_id>/jobs
