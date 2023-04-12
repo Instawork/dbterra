@@ -35,7 +35,6 @@ jobs:
     - name: Package
       shell: bash
       run: |
-        strip target/${{ matrix.target }}/release/dbt-cloud-sync
         cd target/${{ matrix.target }}/release          
         tar czvf ../../../dbt-cloud-sync-${{ matrix.target }}.tar.gz dbt-cloud-sync
         cd -
