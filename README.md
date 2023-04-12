@@ -2,6 +2,9 @@
 
 dbt infrastructure-as-code that is friendly to analysts, bizops, etc
 
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/Instawork/dbt-cloud-sync)
+![GitHub](https://img.shields.io/github/license/Instawork/dbt-cloud-sync)
+
 ## Motivation
 
 While there are Terraform plugins that can be used to work with `dbt Cloud` jobs, environments, etc, we wanted a simple way to be able to create/modify/delete jobs within the same repository in a readable way that doesn't require any DevOps knowledge.
