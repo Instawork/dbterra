@@ -3,7 +3,8 @@
 dbt infrastructure-as-code that is friendly to analysts, bizops, etc
 
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/Instawork/dbt-cloud-sync)
-![GitHub](https://img.shields.io/github/license/Instawork/dbt-cloud-sync)
+![GitHub license](https://img.shields.io/github/license/Instawork/dbt-cloud-sync)
+![GitHub last commit](https://img.shields.io/github/last-commit/Instawork/dbt-cloud-sync)
 
 ## Motivation
 
