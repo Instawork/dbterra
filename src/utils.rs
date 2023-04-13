@@ -94,3 +94,137 @@ impl RemoteJob {
         Diff::from_new(v1, v2)
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use std::collections::HashMap;
+
+    use crate::{
+        config::Config,
+        local::{Environment, Job as LocalJob},
+        remote::{Date, Execution, Job as RemoteJob, Schedule, Settings, Time, Triggers},
+    };
+
+    #[test]
+    fn defaults() {
+        let config = Config {
+            account_id: 123,
+            token: "abc123".to_string(),
+            project_id: Some(456),
+        };
+        let mut environments = HashMap::new();
+        environments.insert("test".to_string(), Environment { id: 789 });
+        let local_job = LocalJob {
+            steps: vec!["dbt run".to_string()],
+            environment: "test".to_string(),
+            target: "production".to_string(),
+            name: None,
+            timeout: None,
+            threads: None,
+            ci: None,
+            schedule: None,
+            generate_docs: None,
+            defer_to_job_id: None,
+        };
+        let expected_remote = RemoteJob {
+            id: None,
+            account_id: config.account_id,
+            project_id: config.project_id.unwrap(),
+            environment_id: environments.get("test").unwrap().id,
+            name: "Test".to_string(), // converted from key
+            dbt_version: None,
+            triggers: Triggers {
+                github_webhook: false,
+                git_provider_webhook: false,
+                schedule: false,
+                custom_branch_only: false,
+            },
+            execute_steps: vec!["dbt run".to_string()],
+            settings: Settings {
+                threads: 4,
+                target_name: "production".to_string(),
+            },
+            state: 1,
+            generate_docs: false,
+            deferring_job_definition_id: None,
+            schedule: Schedule {
+                cron: "0/10 * * * *".to_string(),
+                date: Date {
+                    type_field: "custom_cron".to_string(),
+                    cron: Some("0/10 * * * *".to_string()),
+                    days: None,
+                },
+                time: Time {
+                    type_field: "every_hour".to_string(),
+                    interval: Some(1),
+                    hours: None,
+                },
+            },
+            execution: Execution { timeout_seconds: 0 },
+        };
+        assert_eq!(
+            RemoteJob::from_local_job("test", local_job, &config, &environments),
+            expected_remote
+        );
+    }
+
+    #[test]
+    fn key() {
+        let config = Config {
+            account_id: 123,
+            token: "abc123".to_string(),
+            project_id: Some(456),
+        };
+        let mut environments = HashMap::new();
+        environments.insert("test".to_string(), Environment { id: 789 });
+        let local_job = LocalJob {
+            steps: vec!["dbt run".to_string()],
+            environment: "test".to_string(),
+            target: "production".to_string(),
+            name: None,
+            timeout: None,
+            threads: None,
+            ci: None,
+            schedule: None,
+            generate_docs: None,
+            defer_to_job_id: None,
+        };
+        let converted_job = RemoteJob::from_local_job(
+            "test_some_snake_case_thing",
+            local_job,
+            &config,
+            &environments,
+        );
+        assert_eq!(&converted_job.name, "Test Some Snake Case Thing");
+    }
+
+    #[test]
+    fn key_is_overridden() {
+        let config = Config {
+            account_id: 123,
+            token: "abc123".to_string(),
+            project_id: Some(456),
+        };
+        let mut environments = HashMap::new();
+        environments.insert("test".to_string(), Environment { id: 789 });
+        let local_job = LocalJob {
+            steps: vec!["dbt run".to_string()],
+            environment: "test".to_string(),
+            target: "production".to_string(),
+            name: Some("My Test Job".to_string()),
+            timeout: None,
+            threads: None,
+            ci: None,
+            schedule: None,
+            generate_docs: None,
+            defer_to_job_id: None,
+        };
+        let converted_job = RemoteJob::from_local_job(
+            "test_some_snake_case_thing",
+            local_job,
+            &config,
+            &environments,
+        );
+        assert_eq!(&converted_job.name, "My Test Job");
+    }
+}
