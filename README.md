@@ -19,10 +19,15 @@ DBT_CLOUD_ACCOUNT_ID=123
 DBT_CLOUD_TOKEN=abc123456xyz
 ```
 
-Your `DBT_CLOUD_ACCOUNT_ID` can be found by looking at the URL you use to access `dbt Cloud`:
+#### DBT_CLOUD_ACCOUNT_ID
+
+Your `DBT_CLOUD_ACCOUNT_ID` can be found by looking at the URL you use to access `dbt Cloud`
+
 `https://cloud.getdbt.com/deploy/<account_id>/projects/<project_id>/jobs`
 
 *You may also declare this via `account` in your `dbt_cloud.yml` file.*
+
+#### DBT_CLOUD_TOKEN
 
 Your `DBT_CLOUD_TOKEN` can be found at the bottom of your [profile page](https://cloud.getdbt.com/settings/profile)
 
