@@ -31,8 +31,13 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
+    /// Plans the changes derived from your dbt_cloud.yml file
     Plan,
-    Apply,
+    /// Plans and applies the changes derived from your dbt_cloud.yml file
+    Apply {
+        #[arg(short, long, default_value_t = false)]
+        auto_approve: bool,
+    },
 }
 
 fn main() {
@@ -63,7 +68,7 @@ fn main() {
             plan.pretty_print();
             println!("\nno changes applied. to apply changes, run `dbt-cloud-sync apply`");
         }
-        Some(Commands::Apply) => {
+        Some(Commands::Apply { auto_approve }) => {
             let plan = Plan::from(yaml, &client, &config);
             if !plan.has_changes() {
                 println!(
@@ -74,11 +79,11 @@ fn main() {
             }
             plan.pretty_print();
             println!();
-            if Confirm::new()
+            let mut prompt = Confirm::new();
+            let prompt = prompt
                 .with_prompt("do you want to apply the above changes?")
-                .interact()
-                .unwrap()
-            {
+                .wait_for_newline(true);
+            if *auto_approve || prompt.interact().unwrap() {
                 println!("applying changes...");
                 plan.apply(&client);
             }
