@@ -18,11 +18,7 @@ pub struct DbtCloudClient<'a> {
 
 impl<'a> DbtCloudClient<'a> {
     pub fn new(config: &'a Config) -> Self {
-        let proxy = reqwest::Proxy::https("http://localhost:8080").unwrap();
-        let client = reqwest::blocking::Client::builder()
-            .proxy(proxy)
-            .build()
-            .unwrap();
+        let client = reqwest::blocking::Client::builder().build().unwrap();
         Self { client, config }
     }
 
