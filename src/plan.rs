@@ -121,7 +121,7 @@ fn determine_job_actions_by_name<'a>(
         let mut did_match = false;
         for r in remote_jobs {
             if c.name == r.name {
-                matched.insert(c.name.clone(), JobPlanType::Update(c.merge(&r), r.clone()));
+                matched.insert(c.name.clone(), JobPlanType::Update(c.merge(r), r.clone()));
                 did_match = true;
                 continue;
             }
@@ -203,11 +203,11 @@ impl JobPlan {
         match &self.plan_type {
             JobPlanType::Create(local) => {
                 println!("creating job: {}", &local.name);
-                client.create_job(&local).expect("failed to create job");
+                client.create_job(local).expect("failed to create job");
             }
             JobPlanType::Update(local, _) => {
                 println!("updating job: {}", local.id.unwrap());
-                client.update_job(&local).expect("failed to update job");
+                client.update_job(local).expect("failed to update job");
             }
             JobPlanType::Delete(remote) => {
                 println!("deleting job: {}", remote.id.unwrap());

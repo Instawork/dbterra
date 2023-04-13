@@ -45,7 +45,7 @@ impl RemoteJob {
             account_id: config.account_id,
             project_id: config.project_id.expect("missing project_id for local job"),
             environment_id: environment.id,
-            name: name,
+            name,
             dbt_version: None,
             triggers: Triggers {
                 github_webhook: ci.run_on_pr.unwrap_or_default(),

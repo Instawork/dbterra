@@ -5,8 +5,8 @@ use treediff::value::Key;
 
 #[derive(Debug, Clone)]
 pub struct Diff {
-    local: Value,
-    remote: Value,
+    _local: Value,
+    _remote: Value,
     changes: Vec<Change>,
 }
 
@@ -22,8 +22,8 @@ impl Diff {
     pub fn from(v1: Value, v2: Value) -> Self {
         let changes = Diff::diff(&v1, &v2);
         Self {
-            local: v1,
-            remote: v2,
+            _local: v1,
+            _remote: v2,
             changes,
         }
     }
@@ -31,8 +31,8 @@ impl Diff {
     pub fn from_new(v1: Value, v2: Value) -> Self {
         let changes = Diff::new_diff(&v1, &v2);
         Self {
-            local: v1,
-            remote: v2,
+            _local: v1,
+            _remote: v2,
             changes,
         }
     }
@@ -54,7 +54,7 @@ impl Diff {
                     if old == "null" {
                         Change::Added(Diff::friendly_key(k), new.to_string())
                     } else {
-                        Change::Modified(Diff::friendly_key(k), old.to_string(), new.to_string())
+                        Change::Modified(Diff::friendly_key(k), old, new.to_string())
                     }
                 }
             })
@@ -72,7 +72,7 @@ impl Diff {
             .collect()
     }
 
-    fn friendly_key(keys: &Vec<Key>) -> String {
+    fn friendly_key(keys: &[Key]) -> String {
         return keys
             .iter()
             .map(|f| f.to_string())
