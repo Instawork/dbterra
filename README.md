@@ -15,12 +15,11 @@ While there are Terraform plugins that can be used to work with `dbt Cloud` jobs
 ## Usage
 
 ```bash
-➜ dbt-cloud-sync
 Usage: dbt-cloud-sync [OPTIONS] [COMMAND]
 
 Commands:
-  plan
-  apply
+  plan   Plans the changes derived from your dbt_cloud.yml file
+  apply  Plans and applies the changes derived from your dbt_cloud.yml file
   help   Print this message or the help of the given subcommand(s)
 
 Options:
