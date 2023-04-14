@@ -66,7 +66,7 @@ fn main() {
         Some(Commands::Plan) => {
             let plan = Plan::from(yaml, &client, &config);
             plan.pretty_print();
-            println!("\nno changes applied. to apply changes, run `dbt-cloud-sync apply`");
+            println!("\nno changes applied. to apply changes, run `dbterra apply`");
         }
         Some(Commands::Apply { auto_approve }) => {
             let plan = Plan::from(yaml, &client, &config);

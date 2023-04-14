@@ -40,11 +40,11 @@ jobs:
       shell: bash
       run: |
         cd target/${{ matrix.target }}/release          
-        tar czvf ../../../dbt-cloud-sync-${{ matrix.target }}.tar.gz dbt-cloud-sync
+        tar czvf ../../../dbterra-${{ matrix.target }}.tar.gz dbterra
         cd -
     - name: Publish
       uses: softprops/action-gh-release@v1
       with:
-          files: 'dbt-cloud-sync*'
+          files: 'dbterra*'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

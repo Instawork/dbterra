@@ -25,7 +25,7 @@ impl<'a> DbtCloudClient<'a> {
     fn construct_headers(&self) -> HeaderMap {
         let mut headers = HeaderMap::new();
         let token_value = HeaderValue::from_str(&format!("Token {}", &self.config.token)).unwrap();
-        headers.insert(USER_AGENT, HeaderValue::from_static("dbt-cloud-sync/0.1"));
+        headers.insert(USER_AGENT, HeaderValue::from_static("dbterra/0.1"));
         headers.insert(AUTHORIZATION, token_value);
         headers
     }
