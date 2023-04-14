@@ -6,7 +6,7 @@ dbt Cloud™️ infrastructure-as-code that is friendly to analysts, bizops, etc
 ![GitHub license](https://img.shields.io/github/license/Instawork/dbterra)
 ![GitHub last commit](https://img.shields.io/github/last-commit/Instawork/dbterra)
 
-<img src="assets/terminal-plan.gif" width="512"/>
+<img src="assets/terminal-dbterra-plan.gif" width="512"/>
 
 ## Motivation
 
