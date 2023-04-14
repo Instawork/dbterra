@@ -1,12 +1,12 @@
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 
 use colored::Colorize;
 
 use crate::{
     config::Config,
     diff::Diff,
+    local::Job as LocalJob,
     local::Root,
-    local::{Job as LocalJob, Project},
     remote::{DbtCloudClient, Job as RemoteJob},
 };
 
@@ -17,55 +17,59 @@ pub struct Plan {
 
 impl Plan {
     pub fn from(yaml: Root, client: &DbtCloudClient, config: &Config) -> Self {
-        let mut changes = Vec::new();
-        for (k, project) in yaml.projects.iter() {
-            // Grab the local YAML jobs and the remote jobs for the project
-            let local_config = config.with_project_id(project.id);
-            let local_jobs: Vec<(&String, &LocalJob)> = project.jobs.iter().collect();
-            let remote_jobs = client
-                .get_jobs_for_project(project.id)
-                .expect("failed to get remote jobs");
+        let changes: Vec<_> = yaml
+            .projects
+            .into_iter()
+            .map(|(k, project)| {
+                // Fetch our remote jobs
+                let remote_jobs = client
+                    .get_jobs_for_project(project.id)
+                    .expect("failed to get remote jobs");
 
-            // Convert our local jobs to look like remote ones
-            let converted_local_jobs: Vec<_> = local_jobs
-                .into_iter()
-                .map(|(k, j)| {
-                    RemoteJob::from_local_job(k, j.clone(), &local_config, &yaml.environments)
-                })
-                .collect();
+                // Convert our local jobs to look like remote ones// Grab the local YAML jobs and the remote jobs for the project
+                let local_config = config.with_project_id(project.id);
+                let local_jobs: Vec<(String, LocalJob)> = project.jobs.into_iter().collect();
+                let converted_local_jobs: Vec<_> = local_jobs
+                    .into_iter()
+                    .map(|(k, j)| {
+                        RemoteJob::from_local_job(&k, j, &local_config, &yaml.environments)
+                    })
+                    .collect();
 
-            // Figure out which are updates, creates, and deletes
-            let job_types: HashMap<String, JobPlanType> = determine_job_actions_by_name(
-                converted_local_jobs.as_slice(),
-                remote_jobs.data.unwrap().as_slice(),
-            );
+                // Figure out which are updates, creates, and deletes
+                let job_types: HashMap<String, JobPlanType> = determine_job_plan_types_by_name(
+                    converted_local_jobs,
+                    remote_jobs.data.unwrap(),
+                );
 
-            // Create job plans
-            let job_diffs: Vec<_> = job_types
-                .values()
-                .map(|plan_type| match plan_type {
-                    JobPlanType::Update(remote, local) => JobPlan {
-                        plan_type: plan_type.clone(),
-                        diff: local.diff(remote),
-                    },
-                    JobPlanType::Create(local) => JobPlan {
-                        plan_type: plan_type.clone(),
-                        diff: RemoteJob::default().new_diff(local),
-                    },
-                    JobPlanType::Delete(remote) => JobPlan {
-                        plan_type: plan_type.clone(),
-                        diff: remote.diff(&RemoteJob::default()),
-                    },
-                })
-                .collect();
+                // Create job plans
+                let job_diffs: Vec<_> = job_types
+                    .into_values()
+                    .map(|plan_type| match &plan_type {
+                        JobPlanType::Update(remote, local) => {
+                            let diff = local.diff(remote);
+                            JobPlan { plan_type, diff }
+                        }
+                        JobPlanType::Create(local) => {
+                            let diff = RemoteJob::default().new_diff(local);
+                            JobPlan { plan_type, diff }
+                        }
+                        JobPlanType::Delete(remote) => {
+                            let diff = remote.diff(&RemoteJob::default());
+                            JobPlan { plan_type, diff }
+                        }
+                    })
+                    .collect();
 
-            // Add our job plans
-            changes.push(ProjectPlan {
-                project_name: k.clone(),
-                project: project.clone(),
-                jobs: job_diffs,
-            });
-        }
+                // Add our job plans
+                ProjectPlan {
+                    project_id: project.id,
+                    project_name: k,
+                    jobs: job_diffs,
+                }
+            })
+            .collect();
+
         Self { projects: changes }
     }
 
@@ -87,8 +91,8 @@ impl Plan {
 }
 
 pub struct ProjectPlan {
+    project_id: i64,
     project_name: String,
-    project: Project,
     jobs: Vec<JobPlan>,
 }
 
@@ -99,7 +103,7 @@ impl ProjectPlan {
     pub fn pretty_print(&self) {
         let mut temp_jobs: Vec<_> = self.jobs.iter().collect(); // vec w/ reference to change order but not clone data
         temp_jobs.sort_by(|a, b| a.name().partial_cmp(b.name()).unwrap());
-        println!("{} ({}):\n", self.project_name, self.project.id);
+        println!("{} ({}):\n", self.project_name, self.project_id);
         for j in temp_jobs {
             j.pretty_print();
         }
@@ -111,36 +115,37 @@ impl ProjectPlan {
     }
 }
 
-// TODO: make more efficient
-fn determine_job_actions_by_name<'a>(
-    converted_jobs: &'a [RemoteJob],
-    remote_jobs: &'a [RemoteJob],
+fn determine_job_plan_types_by_name(
+    local_jobs: Vec<RemoteJob>,
+    remote_jobs: Vec<RemoteJob>,
 ) -> HashMap<String, JobPlanType> {
+    let local_keys: HashSet<String> = local_jobs.iter().map(|j| j.name.to_string()).collect();
+    let remote_keys: HashSet<String> = remote_jobs.iter().map(|j| j.name.to_string()).collect();
+    let create_keys: Vec<_> = local_keys.difference(&remote_keys).collect();
+    let delete_keys: Vec<_> = remote_keys.difference(&local_keys).collect();
+    let update_keys: Vec<_> = local_keys.intersection(&remote_keys).collect();
+    let mut local_jobs_by_name: HashMap<_, _> = local_jobs
+        .into_iter()
+        .map(|j| (j.name.to_string(), j))
+        .collect();
+    let mut remote_jobs_by_name: HashMap<_, _> = remote_jobs
+        .into_iter()
+        .map(|j| (j.name.to_string(), j))
+        .collect();
+
     let mut matched = HashMap::new();
-    for c in converted_jobs {
-        let mut did_match = false;
-        for r in remote_jobs {
-            if c.name == r.name {
-                matched.insert(c.name.clone(), JobPlanType::Update(c.merge(r), r.clone()));
-                did_match = true;
-                continue;
-            }
-        }
-        if !did_match {
-            matched.insert(c.name.clone(), JobPlanType::Create(c.clone()));
-        }
+    for k in create_keys {
+        let c = local_jobs_by_name.remove(k.as_str()).unwrap();
+        matched.insert(k.to_string(), JobPlanType::Create(c));
     }
-    for r in remote_jobs {
-        let mut did_match = false;
-        for c in converted_jobs {
-            if c.name == r.name {
-                did_match = true;
-                continue;
-            }
-        }
-        if !did_match {
-            matched.insert(r.name.clone(), JobPlanType::Delete(r.clone()));
-        }
+    for k in update_keys {
+        let c = local_jobs_by_name.remove(k.as_str()).unwrap();
+        let r = remote_jobs_by_name.remove(k.as_str()).unwrap();
+        matched.insert(k.to_string(), JobPlanType::Update(c.merge(&r), r));
+    }
+    for k in delete_keys {
+        let r = remote_jobs_by_name.remove(k.as_str()).unwrap();
+        matched.insert(k.to_string(), JobPlanType::Delete(r));
     }
     matched
 }
