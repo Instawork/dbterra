@@ -95,4 +95,15 @@ impl<'a> DbtCloudClient<'a> {
         let dbt_response = response.json()?;
         Ok(dbt_response)
     }
+
+    pub fn delete_job(&self, job: &Job) -> Result<Response<Job>, Box<dyn Error>> {
+         let url = format!(
+            "https://cloud.getdbt.com/api/v2/accounts/{}/jobs/{}/",
+            self.config.account_id,
+            job.id.expect("id is required to update a job"),
+        );
+        let response = self.request::<Job>(Method::DELETE, &url, None).send()?;
+        let dbt_response = response.json()?;
+        Ok(dbt_response)
+    }
 }

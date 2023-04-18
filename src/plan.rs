@@ -216,6 +216,7 @@ impl JobPlan {
             }
             JobPlanType::Delete(remote) => {
                 println!("deleting job: {}", remote.id.unwrap());
+                client.delete_job(remote).expect("failed to delete job");
             }
         }
     }
