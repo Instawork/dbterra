@@ -97,7 +97,7 @@ impl<'a> DbtCloudClient<'a> {
     }
 
     pub fn delete_job(&self, job: &Job) -> Result<Response<Job>, Box<dyn Error>> {
-         let url = format!(
+        let url = format!(
             "https://cloud.getdbt.com/api/v2/accounts/{}/jobs/{}/",
             self.config.account_id,
             job.id.expect("id is required to update a job"),

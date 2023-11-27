@@ -51,7 +51,7 @@ impl RemoteJob {
                 github_webhook: ci.run_on_pr.unwrap_or_default(),
                 git_provider_webhook: false,
                 schedule: has_schedule,
-                custom_branch_only: ci.custom_branch_only.unwrap_or_default(),
+                custom_branch_only: ci.custom_branch_only,
             },
             execute_steps: job.steps,
             execution: Execution {
@@ -137,7 +137,7 @@ mod tests {
                 github_webhook: false,
                 git_provider_webhook: false,
                 schedule: false,
-                custom_branch_only: false,
+                custom_branch_only: None,
             },
             execute_steps: vec!["dbt run".to_string()],
             settings: Settings {

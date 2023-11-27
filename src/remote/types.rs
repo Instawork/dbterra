@@ -29,7 +29,7 @@ pub struct Triggers {
     pub github_webhook: bool,
     pub git_provider_webhook: bool,
     pub schedule: bool,
-    pub custom_branch_only: bool,
+    pub custom_branch_only: Option<bool>,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
