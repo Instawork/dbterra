@@ -2,6 +2,7 @@
 // https://docs.getdbt.com/dbt-cloud/api-v2
 
 use std::error::Error;
+use colored::Colorize;
 
 use reqwest::blocking::{Client, RequestBuilder};
 use reqwest::header::{HeaderMap, HeaderValue, AUTHORIZATION, USER_AGENT};
@@ -52,7 +53,7 @@ impl<'a> DbtCloudClient<'a> {
         );
 
         let response = self.request::<Job>(Method::GET, &url, None).send()?;
-        let dbt_response = response.json()?;
+        let dbt_response = log_when_error(response)?.json()?;
         Ok(dbt_response)
     }
 
@@ -81,7 +82,7 @@ impl<'a> DbtCloudClient<'a> {
             self.config.account_id,
         );
         let response = self.request(Method::POST, &url, Some(job)).send()?;
-        let dbt_response = response.json()?;
+        let dbt_response = log_when_error(response)?.json()?;
         Ok(dbt_response)
     }
 
@@ -92,7 +93,7 @@ impl<'a> DbtCloudClient<'a> {
             job.id.expect("id is required to update a job"),
         );
         let response = self.request(Method::POST, &url, Some(job)).send()?;
-        let dbt_response = response.json()?;
+        let dbt_response = log_when_error(response)?.json()?;
         Ok(dbt_response)
     }
 
@@ -103,7 +104,20 @@ impl<'a> DbtCloudClient<'a> {
             job.id.expect("id is required to update a job"),
         );
         let response = self.request::<Job>(Method::DELETE, &url, None).send()?;
-        let dbt_response = response.json()?;
+        let dbt_response = log_when_error(response)?.json()?;
         Ok(dbt_response)
+    }
+}
+
+fn log_when_error(response: reqwest::blocking::Response) -> reqwest::Result<reqwest::blocking::Response> {
+    match response.error_for_status() {
+        Ok(res) => Ok(res),
+        Err(err) => {
+            if err.url().is_some() && err.status().is_some() {
+                let error = format!("request to {} failed with http status code of {}", err.url().unwrap().path(), err.status().unwrap());
+                println!("{}", error.red());
+            }
+            Err(err)
+        }
     }
 }

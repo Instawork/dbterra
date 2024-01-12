@@ -65,6 +65,7 @@ impl RemoteJob {
             generate_docs: job.generate_docs.unwrap_or(false),
             schedule: Schedule::cron(&schedule.cron),
             deferring_job_definition_id: job.defer_to_job_id,
+            deferring_environment_id: job.defer_to_env_id,
         }
     }
 

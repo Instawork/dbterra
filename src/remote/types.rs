@@ -20,6 +20,7 @@ pub struct Job {
     pub state: i64,
     pub generate_docs: bool,
     pub deferring_job_definition_id: Option<i64>,
+    pub deferring_environment_id: Option<i64>,
     pub schedule: Schedule,
     pub execution: Execution,
 }

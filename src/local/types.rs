@@ -32,6 +32,7 @@ pub struct Job {
     pub steps: Vec<String>,
     pub generate_docs: Option<bool>,
     pub defer_to_job_id: Option<i64>,
+    pub defer_to_env_id: Option<i64>,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
