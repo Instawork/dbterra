@@ -99,6 +99,43 @@ For convenience, we've built binaries for both `x86_64` and `aarch64` linux for 
  cargo install dbterra --git https://github.com/Instawork/dbterra.git
  ```
 
+## Full YAML Options
+
+```yaml
+account:
+  id: 43811
+
+projects:
+  fishtown_analytics:
+    id: 1234
+    jobs:
+      partial_run:
+        environment: production
+        target: somethingotherthandefault
+        threads: 8
+        defer_to_job_id: 22222
+        steps:
+          - dbt run --defer --select state:modified+
+        generate_docs: true
+      github_pr:
+        name: Github PR
+        environment: github
+        target: gh
+        threads: 4
+        ci:
+          run_on_pr: true
+        defer_to_env_id: 1234
+        steps:
+          - dbt seed --select state:modified+
+          - dbt run --fail-fast --full-refresh --defer --select state:modified+
+          - dbt test --fail-fast --defer --select state:modified+
+environments:
+  production:
+    id: 1234
+  github:
+    id: 5678
+```
+
 ## What's missing?
 
 - [ ] Create/modify/delete environments (currently read-only)
