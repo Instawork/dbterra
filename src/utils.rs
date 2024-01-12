@@ -126,6 +126,7 @@ mod tests {
             schedule: None,
             generate_docs: None,
             defer_to_job_id: None,
+            defer_to_env_id: None,
         };
         let expected_remote = RemoteJob {
             id: None,
@@ -148,6 +149,7 @@ mod tests {
             state: 1,
             generate_docs: false,
             deferring_job_definition_id: None,
+            deferring_environment_id: None,
             schedule: Schedule {
                 cron: "0/10 * * * *".to_string(),
                 date: Date {
@@ -189,6 +191,7 @@ mod tests {
             schedule: None,
             generate_docs: None,
             defer_to_job_id: None,
+            defer_to_env_id: None,
         };
         let converted_job = RemoteJob::from_local_job(
             "test_some_snake_case_thing",
@@ -219,6 +222,7 @@ mod tests {
             schedule: None,
             generate_docs: None,
             defer_to_job_id: None,
+            defer_to_env_id: None,
         };
         let converted_job = RemoteJob::from_local_job(
             "test_some_snake_case_thing",
