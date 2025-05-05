@@ -112,6 +112,7 @@ mod tests {
             account_id: 123,
             token: "abc123".to_string(),
             project_id: Some(456),
+            base_url: "https://cloud.getdbt.com".to_string(),
         };
         let mut environments = HashMap::new();
         environments.insert("test".to_string(), Environment { id: 789 });
@@ -177,6 +178,7 @@ mod tests {
             account_id: 123,
             token: "abc123".to_string(),
             project_id: Some(456),
+            base_url: "https://cloud.getdbt.com".to_string(),
         };
         let mut environments = HashMap::new();
         environments.insert("test".to_string(), Environment { id: 789 });
@@ -208,6 +210,7 @@ mod tests {
             account_id: 123,
             token: "abc123".to_string(),
             project_id: Some(456),
+            base_url: "https://cloud.getdbt.com".to_string(),
         };
         let mut environments = HashMap::new();
         environments.insert("test".to_string(), Environment { id: 789 });

@@ -28,12 +28,30 @@ Options:
   -V, --version   Print version
 ```
 
+### Environment Variables
+
 In order to run, `dbterra` expects to environment variables to be set:
 
 ```bash
+DBT_CLOUD_BASE_URL=https://xyz.us1.dbt.com
 DBT_CLOUD_ACCOUNT_ID=123
 DBT_CLOUD_TOKEN=abc123456xyz
 ```
+
+#### DBT_CLOUD_BASE_URL
+
+Recently, dbt has switched to custom domains for accounts. You can set your base url using the `DBT_CLOUD_BASE_URL` environment variable.
+You can easily find this by looking at the URL once your signed in.
+
+For example:
+
+```bash
+DBT_CLOUD_BASE_URL=https://xyz.us1.dbt.com
+```
+
+#### DBT_CLOUD_TOKEN
+
+Your `DBT_CLOUD_TOKEN` can be found at the bottom of your [profile page](https://cloud.getdbt.com/settings/profile)
 
 #### DBT_CLOUD_ACCOUNT_ID
 
@@ -42,10 +60,6 @@ Your `DBT_CLOUD_ACCOUNT_ID` can be found by looking at the URL you use to access
 `https://cloud.getdbt.com/deploy/<account_id>/projects/<project_id>/jobs`
 
 *You may also declare this via `account` in your `dbt_cloud.yml` file.*
-
-#### DBT_CLOUD_TOKEN
-
-Your `DBT_CLOUD_TOKEN` can be found at the bottom of your [profile page](https://cloud.getdbt.com/settings/profile)
 
 ### dbt_cloud.yml
 

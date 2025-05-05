@@ -48,7 +48,8 @@ impl<'a> DbtCloudClient<'a> {
 
     pub fn get_jobs(&self) -> Result<Response<Vec<Job>>, Box<dyn Error>> {
         let url = format!(
-            "https://cloud.getdbt.com/api/v2/accounts/{}/jobs/",
+            "{}/api/v2/accounts/{}/jobs/",
+            self.config.base_url,
             self.config.account_id,
         );
 
@@ -78,7 +79,8 @@ impl<'a> DbtCloudClient<'a> {
 
     pub fn create_job(&self, job: &Job) -> Result<Response<Job>, Box<dyn Error>> {
         let url = format!(
-            "https://cloud.getdbt.com/api/v2/accounts/{}/jobs/",
+            "{}/api/v2/accounts/{}/jobs/",
+            self.config.base_url,
             self.config.account_id,
         );
         let response = self.request(Method::POST, &url, Some(job)).send()?;
@@ -88,7 +90,8 @@ impl<'a> DbtCloudClient<'a> {
 
     pub fn update_job(&self, job: &Job) -> Result<Response<Job>, Box<dyn Error>> {
         let url = format!(
-            "https://cloud.getdbt.com/api/v2/accounts/{}/jobs/{}/",
+            "{}/api/v2/accounts/{}/jobs/{}/",
+            self.config.base_url,
             self.config.account_id,
             job.id.expect("id is required to update a job"),
         );
@@ -99,7 +102,8 @@ impl<'a> DbtCloudClient<'a> {
 
     pub fn delete_job(&self, job: &Job) -> Result<Response<Job>, Box<dyn Error>> {
         let url = format!(
-            "https://cloud.getdbt.com/api/v2/accounts/{}/jobs/{}/",
+            "{}/api/v2/accounts/{}/jobs/{}/",
+            self.config.base_url,
             self.config.account_id,
             job.id.expect("id is required to update a job"),
         );
